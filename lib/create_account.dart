@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 
+import 'home_screen.dart';
 import 'methods.dart';
 
 
@@ -127,8 +128,8 @@ class _CreateAccountState extends State<CreateAccount> {
               setState(() {
                 isLoading = false;
               });
-              // Navigator.push(
-              //     context, MaterialPageRoute(builder: (_) => HomeScreen()));
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => HomeScreen()));
               print("Account Created Sucessfull");
             } else {
               print("Login Failed");

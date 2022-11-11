@@ -1,3 +1,4 @@
+import 'package:chat_screen_for/authentication.dart';
 import 'package:chat_screen_for/login_account_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: Authentication(),
     );
   }
 }
