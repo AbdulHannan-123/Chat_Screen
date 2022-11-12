@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text("HomeScreen"),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ?const Center(child: CircularProgressIndicator())
           : Column(
               children: [
                 SizedBox(
@@ -70,8 +70,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: onSearch,
                   child: const Text("Search"),
                 ),
+                userMap!=null ? ListTile(
+                  onTap: (){},
+                  leading:const Icon(Icons.person, color: Colors.black,),
+                  title: Text(userMap!['name']),
+                  subtitle: Text(userMap!['email']),
+                  trailing:const Icon(Icons.chat),
+                ): Container(),
               ],
             ),
     );
   }
+
+  // Widget chatTitle(Size size){
+  //   return Container(
+  //     height: size.height / 12,
+  //     width: size.width / 1.2,
+  //     child:  Row(
+  //       children: [
+
+  //       ],
+  //     ),
+  //   );
+  // }
 }
