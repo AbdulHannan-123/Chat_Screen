@@ -87,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 userMap != null
                     ? ListTile(
                         onTap: () {
+                          print(userMap!['uid'].toString()+"=====================");
                             String roomId = chatRoomId(_auth.currentUser!.displayName.toString() ,userMap!['name'] );
                             Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ChatRoom(chatRoomId: roomId,userMap: userMap!,),
