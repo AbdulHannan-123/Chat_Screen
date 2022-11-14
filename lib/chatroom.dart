@@ -40,74 +40,75 @@ class ChatRoom extends StatelessWidget {
       appBar: AppBar(
         title: Text(userMap['name']),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              height: size.height / 1.25,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: _firestore
-                    .collection('chatroom')
-                    .doc(chatRoomId)
-                    .collection('chats')
-                    .orderBy("time", descending: false)
-                    .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.data != null) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        Map<String, dynamic> map = snapshot.data!.docs[index]
-                            .data() as Map<String, dynamic>;
-                        ;
-                        return message(size, map);
-                      },
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
+      body: Container(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height: size.height / 1.25,
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _firestore
+                      .collection('chatroom')
+                      .doc(chatRoomId)
+                      .collection('chats')
+                      .orderBy("time", descending: false)
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.data != null) {
+                      return ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          Map<String, dynamic> map = snapshot.data!.docs[index]
+                              .data() as Map<String, dynamic>;
+                          
+                          return message(size, map);
+                        },
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
               ),
-            ),
-            Container(
-              height: size.height / 10,
-              width: size.width,
-              alignment: Alignment.center,
-              child: SizedBox(
-                height: size.height / 12,
-                width: size.width / 1.1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: size.height / 12,
-                      width: size.width / 1.5,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: TextField(
-                          controller: _message,
-                          decoration: InputDecoration(
-                            hintText: "Send Message",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(9.0),
+              Container(
+                height: size.height / 10,
+                width: size.width,
+                alignment: Alignment.center,
+                child: SizedBox(
+                  height: size.height / 12,
+                  width: size.width / 1.1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: size.height / 12,
+                        width: size.width / 1.5,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: TextField(
+                            controller: _message,
+                            decoration: InputDecoration(
+                              hintText: "Send Message",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(9.0),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        print('object');
-                        onSendMessage();
-                      },
-                      icon: const Icon(Icons.send),
-                    ),
-                  ],
+                      IconButton(
+                        onPressed: () {
+                          onSendMessage();
+                        },
+                        icon: const Icon(Icons.send),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
