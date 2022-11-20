@@ -50,100 +50,105 @@ class _ChatRoomState extends State<ChatRoom> {
         title: Text(widget.userMap['name']),
       ),
       body: Container(
-            // height: size.height / 1.25,
-            child:
-             Column(
-               children: [
-                 Expanded (
-                   child: StreamBuilder<QuerySnapshot>(
-                    stream: _firestore
-                        .collection('chatroom')
-                        .doc(widget.chatRoomId)
-                        .collection('chats')
-                        .orderBy("time", descending: true)
-                        .snapshots(),
-                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.data != null) {
-                        return ListView.builder(
-                          reverse: true,
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, index) {
-                            Map<String, dynamic> map = snapshot.data!.docs[index]
-                                .data() as Map<String, dynamic>;
-                            
-                            return message(size, map);
-                          },
-                        );
-                      } else {
-                        return Container();
-                    }
-                    },
-                             ),
-                 ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    padding: const EdgeInsets.all(8),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _message,
-                            decoration: const InputDecoration(labelText: 'Send Message...'),
-                            onChanged: (value) {
-                              setState(() {
-                                _endmessage=value;
-                              });
-                            },
-                          ),
-                        ),
-                        IconButton(
-                          color: Theme.of(context).colorScheme.primary,
-                          onPressed: _endmessage.trim().isEmpty ? null : onSendMessage,
-                          icon: const Icon(Icons.send),
-                        ),
-                      ],
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('whatsappdark.jpg'), fit: BoxFit.cover)),
+        child: Column(
+          children: [
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _firestore
+                    .collection('chatroom')
+                    .doc(widget.chatRoomId)
+                    .collection('chats')
+                    .orderBy("time", descending: true)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.data != null) {
+                    return ListView.builder(
+                      reverse: true,
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        Map<String, dynamic> map = snapshot.data!.docs[index]
+                            .data() as Map<String, dynamic>;
+
+                        return message(size, map);
+                      },
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                  color: Colors.red, borderRadius: BorderRadius.circular(34)),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _message,
+                      decoration:
+                          const InputDecoration(labelText: 'Send Message...'),
+                      onChanged: (value) {
+                        setState(() {
+                          _endmessage = value;
+                        });
+                      },
                     ),
                   ),
-               ],
-             ),
-          ),
-          // Container(
-          //   // height: size.height / 10,
-          //   width: size.width,
-          //   alignment: Alignment.center,
-          //   child: SizedBox(
-          //     // height: size.height / 12,
-          //     width: size.width / 1.1,
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: [
-          //         SizedBox(
-          //           // height: size.height / 12,
-          //           width: size.width / 1.5,
-          //           child: Padding(
-          //             padding: const EdgeInsets.only(left: 8),
-          //             child: TextField(
-          //               controller: _message,
-          //               decoration: InputDecoration(
-          //                 hintText: "Send Message",
-          //                 border: OutlineInputBorder(
-          //                   borderRadius: BorderRadius.circular(9.0),
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
-          //         ),
-          //         IconButton(
-          //           onPressed:  () {
-          //             onSendMessage();
-          //           },
-          //           icon: const Icon(Icons.send),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-        
+                  IconButton(
+                    color: Theme.of(context).colorScheme.primary,
+                    onPressed:
+                        _endmessage.trim().isEmpty ? null : onSendMessage,
+                    icon: const Icon(Icons.send),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      // Container(
+      //   // height: size.height / 10,
+      //   width: size.width,
+      //   alignment: Alignment.center,
+      //   child: SizedBox(
+      //     // height: size.height / 12,
+      //     width: size.width / 1.1,
+      //     child: Row(
+      //       mainAxisAlignment: MainAxisAlignment.center,
+      //       children: [
+      //         SizedBox(
+      //           // height: size.height / 12,
+      //           width: size.width / 1.5,
+      //           child: Padding(
+      //             padding: const EdgeInsets.only(left: 8),
+      //             child: TextField(
+      //               controller: _message,
+      //               decoration: InputDecoration(
+      //                 hintText: "Send Message",
+      //                 border: OutlineInputBorder(
+      //                   borderRadius: BorderRadius.circular(9.0),
+      //                 ),
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //         IconButton(
+      //           onPressed:  () {
+      //             onSendMessage();
+      //           },
+      //           icon: const Icon(Icons.send),
+      //         ),
+      //       ],
+      //     ),
+      //   ),
+      // ),
     );
   }
 
@@ -159,7 +164,9 @@ class _ChatRoomState extends State<ChatRoom> {
           color: Colors.blue,
         ),
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+        margin: map['send_by'] != _auth.currentUser!.displayName
+            ?const EdgeInsets.only(right: 140, top: 3, bottom: 3, left: 10)
+            :const EdgeInsets.only(left: 140, top: 3, bottom: 3, right: 10),
         child: Text(
           map['message'],
           style: const TextStyle(
