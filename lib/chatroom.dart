@@ -2,15 +2,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ChatRoom extends StatelessWidget {
+class ChatRoom extends StatefulWidget {
   final Map<String, dynamic> userMap;
 
   final String chatRoomId;
 
   ChatRoom({required this.userMap, required this.chatRoomId});
 
+  @override
+  State<ChatRoom> createState() => _ChatRoomState();
+}
+
+class _ChatRoomState extends State<ChatRoom> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   final TextEditingController _message = TextEditingController();
+  var _endmessage = '';
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void onSendMessage() async {
@@ -24,13 +32,14 @@ class ChatRoom extends StatelessWidget {
 
       await _firestore
           .collection('chatroom')
-          .doc(chatRoomId)
+          .doc(widget.chatRoomId)
           .collection('chats')
           .add(messages);
       _message.clear();
     } else {
       print('enter some text');
     }
+    _message.clear();
   }
 
   @override
@@ -38,79 +47,103 @@ class ChatRoom extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text(userMap['name']),
+        title: Text(widget.userMap['name']),
       ),
       body: Container(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: size.height / 1.25,
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: _firestore
-                      .collection('chatroom')
-                      .doc(chatRoomId)
-                      .collection('chats')
-                      .orderBy("time", descending: false)
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.data != null) {
-                      return ListView.builder(
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                          Map<String, dynamic> map = snapshot.data!.docs[index]
-                              .data() as Map<String, dynamic>;
-                          
-                          return message(size, map);
-                        },
-                      );
-                    } else {
-                      return Container();
+            // height: size.height / 1.25,
+            child:
+             Column(
+               children: [
+                 Expanded (
+                   child: StreamBuilder<QuerySnapshot>(
+                    stream: _firestore
+                        .collection('chatroom')
+                        .doc(widget.chatRoomId)
+                        .collection('chats')
+                        .orderBy("time", descending: true)
+                        .snapshots(),
+                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.data != null) {
+                        return ListView.builder(
+                          reverse: true,
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            Map<String, dynamic> map = snapshot.data!.docs[index]
+                                .data() as Map<String, dynamic>;
+                            
+                            return message(size, map);
+                          },
+                        );
+                      } else {
+                        return Container();
                     }
-                  },
-                ),
-              ),
-              Container(
-                height: size.height / 10,
-                width: size.width,
-                alignment: Alignment.center,
-                child: SizedBox(
-                  height: size.height / 12,
-                  width: size.width / 1.1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: size.height / 12,
-                        width: size.width / 1.5,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8),
+                    },
+                             ),
+                 ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      children: [
+                        Expanded(
                           child: TextField(
                             controller: _message,
-                            decoration: InputDecoration(
-                              hintText: "Send Message",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(9.0),
-                              ),
-                            ),
+                            decoration: const InputDecoration(labelText: 'Send Message...'),
+                            onChanged: (value) {
+                              setState(() {
+                                _endmessage=value;
+                              });
+                            },
                           ),
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          onSendMessage();
-                        },
-                        icon: const Icon(Icons.send),
-                      ),
-                    ],
+                        IconButton(
+                          color: Theme.of(context).colorScheme.primary,
+                          onPressed: _endmessage.trim().isEmpty ? null : onSendMessage,
+                          icon: const Icon(Icons.send),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ),
-            ],
+               ],
+             ),
           ),
-        ),
-      ),
+          // Container(
+          //   // height: size.height / 10,
+          //   width: size.width,
+          //   alignment: Alignment.center,
+          //   child: SizedBox(
+          //     // height: size.height / 12,
+          //     width: size.width / 1.1,
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         SizedBox(
+          //           // height: size.height / 12,
+          //           width: size.width / 1.5,
+          //           child: Padding(
+          //             padding: const EdgeInsets.only(left: 8),
+          //             child: TextField(
+          //               controller: _message,
+          //               decoration: InputDecoration(
+          //                 hintText: "Send Message",
+          //                 border: OutlineInputBorder(
+          //                   borderRadius: BorderRadius.circular(9.0),
+          //                 ),
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //         IconButton(
+          //           onPressed:  () {
+          //             onSendMessage();
+          //           },
+          //           icon: const Icon(Icons.send),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+        
     );
   }
 
