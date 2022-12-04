@@ -49,7 +49,24 @@ class _ChatRoomState extends State<ChatRoom> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.userMap['name']),
+        title: StreamBuilder<DocumentSnapshot>(
+          stream: _firestore.collection('users').doc(widget.userMap['uid']).snapshots(), // passing the uid of other user to show him our statusor to see his status
+          builder: (context, snapshot) {
+            if (snapshot.data != null ) {
+              return Container(
+                child: Column(
+                  children: [
+                    Text(widget.userMap['name']),
+                    // Text(widget.userMap['statuss']),  //to show the status of user
+                    Text(snapshot.data!['status']) // to show the status on real time of other user
+                  ],
+                ),
+              );
+            } else{
+              return Container();
+            }
+          },
+          ),
       ),
       body: Container(
         decoration:const BoxDecoration(

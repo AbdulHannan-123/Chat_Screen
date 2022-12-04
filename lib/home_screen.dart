@@ -10,12 +10,38 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver{
   Map<String, dynamic>? userMap;
   bool isLoading = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final TextEditingController _search = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    setStatus("online");
+  }
+
+  void setStatus(String status) async {
+    await _firestore.collection('users').doc(_auth.currentUser!.uid).update({
+      "status":status
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if(state==AppLifecycleState.resumed){
+      // your status is online
+      setStatus("online");
+    } else {
+      //offline
+      setStatus("offline");
+    }
+  }
 
   String chatRoomId(String user1 , String user2){
     if (user1[0].toLowerCase().codeUnits[0] > user2.toLowerCase().codeUnits[0]) {
