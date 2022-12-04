@@ -1,10 +1,94 @@
 import 'package:chat_screen_for/group_chat/create_group/create_group.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class AddMembersInGroup extends StatelessWidget {
+class AddMembersInGroup extends StatefulWidget {
   const AddMembersInGroup({Key? key}) : super(key: key);
+
+  @override
+  State<AddMembersInGroup> createState() => _AddMembersInGroupState();
+}
+
+class _AddMembersInGroupState extends State<AddMembersInGroup> {
+  final TextEditingController _search = TextEditingController();
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
+  final List<Map<String, dynamic>> membersList = [];
+  bool isLoading = false;
+  Map<String, dynamic>? userMap; // storing the search person
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUserDetails();
+  }
+
+  void onSearch() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await _firestore
+        .collection('users')
+        .where('email', isEqualTo: _search.text)
+        .get()
+        .then((value) {
+      setState(() {
+        userMap = value.docs[0].data();
+        isLoading = false;
+      });
+      print(userMap);
+    });
+  }
+
+  void getCurrentUserDetails() async {
+    await _firestore
+        .collection('users')
+        .doc(_auth.currentUser!.uid)
+        .get()
+        .then((map) {
+      setState(() {
+        membersList.add({
+          'name': map['name'],
+          'email': map['email'],
+          'uid': map['uid'],
+          'isAdmin': true
+        });
+      });
+    });
+  }
+
+  void onResultTap() {
+    bool isAlreadyExist = false;
+    for (var i = 0; i < membersList.length; i++) {
+      if (membersList[i]['uid'] == userMap!['uid']) {
+       isAlreadyExist = true;
+      }
+    }
+    if(!isAlreadyExist){
+       setState(() {
+          membersList.add({
+            'name': userMap!['name'],
+            'email': userMap!['email'],
+            'uid': userMap!['uid'],
+            'isAdmin': false
+          });
+          userMap = null;
+        });
+    }
+  }
+
+  void onRemove(int index) {
+    if (membersList[index]['uid'] != _auth.currentUser!.uid) {
+      setState(() {
+        membersList.removeAt(index);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +105,13 @@ class AddMembersInGroup extends StatelessWidget {
               child: ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: 3,
+                itemCount: membersList.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    onTap: () {},
+                    onTap: () => onRemove(index),
                     leading: Icon(Icons.account_circle),
-                    title: Text("User 2"),
+                    title: Text(membersList[index]['name']),
+                    subtitle: Text(membersList[index]['email']),
                     trailing: Icon(Icons.close),
                   );
                 },
@@ -43,7 +128,7 @@ class AddMembersInGroup extends StatelessWidget {
                 height: size.height / 14,
                 width: size.width / 1.2,
                 child: TextField(
-                  // controller: _search,
+                  controller: _search,
                   decoration: InputDecoration(
                     hintText: "Search",
                     border: OutlineInputBorder(
@@ -55,21 +140,34 @@ class AddMembersInGroup extends StatelessWidget {
             SizedBox(
               height: size.height / 50,
             ),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text("Search"),
-            ),
+            isLoading
+                ? Container(
+                    child: CircularProgressIndicator(),
+                  )
+                : ElevatedButton(
+                    onPressed: onSearch,
+                    child: const Text("Search"),
+                  ),
+            userMap != null
+                ? ListTile(
+                    onTap: onResultTap,
+                    leading: Icon(Icons.account_box),
+                    title: Text(userMap!['name']),
+                    subtitle: Text(userMap!['email']),
+                    trailing: Icon(Icons.add),
+                  )
+                : Container()
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton:membersList.length >= 2? FloatingActionButton(
         child: Icon(Icons.forward),
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => CreateGroup(),
           ),
         ),
-      ),
+      ): null,
     );
   }
 }
