@@ -32,6 +32,8 @@ class _ChatRoomState extends State<ChatRoom> {
 
       await _firestore
           .collection('chatroom')
+          .doc(_auth.currentUser!.uid)
+          .collection('chatroom')
           .doc(widget.chatRoomId)
           .collection('chats')
           .add(messages);
@@ -50,7 +52,7 @@ class _ChatRoomState extends State<ChatRoom> {
         title: Text(widget.userMap['name']),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration:const BoxDecoration(
             image: DecorationImage(
                 image: AssetImage('whatsappdark.jpg'), fit: BoxFit.cover)),
         child: Column(
@@ -58,6 +60,8 @@ class _ChatRoomState extends State<ChatRoom> {
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: _firestore
+                    .collection('chatroom')
+                    .doc(_auth.currentUser!.uid)
                     .collection('chatroom')
                     .doc(widget.chatRoomId)
                     .collection('chats')
@@ -153,29 +157,34 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   Widget message(Size size, Map<String, dynamic> map) {
-    return Container(
-      width: size.width,
-      alignment: map['send_by'] == _auth.currentUser!.displayName
-          ? Alignment.centerRight
-          : Alignment.centerLeft,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Colors.blue,
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-        margin: map['send_by'] != _auth.currentUser!.displayName
-            ?const EdgeInsets.only(right: 140, top: 3, bottom: 3, left: 10)
-            :const EdgeInsets.only(left: 140, top: 3, bottom: 3, right: 10),
-        child: Text(
-          map['message'],
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
+    return Row(
+      children: [
+        Container(
+          width: size.width,
+          alignment: map['send_by'] == _auth.currentUser!.displayName
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color:map['send_by'] != _auth.currentUser!.displayName? Colors.green : Colors.red,
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+            margin: map['send_by'] != _auth.currentUser!.displayName
+                ?const EdgeInsets.only(right: 140, top: 3, bottom: 3, left: 10)
+                :const EdgeInsets.only(left: 140, top: 3, bottom: 3, right: 10),
+            child: Text(
+              map['message'].toString(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ),
-      ),
+        // Text(map['time'].toString())
+      ],
     );
   }
 }
