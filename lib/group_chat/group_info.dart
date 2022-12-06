@@ -1,10 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class GroupInfo extends StatelessWidget {
-  const GroupInfo({Key? key}) : super(key: key);
+class GroupInfo extends StatefulWidget {
+  final String groupId,groupName;
+  const GroupInfo({required this.groupId, required this.groupName, Key? key}) : super(key: key);
 
+  @override
+  State<GroupInfo> createState() => _GroupInfoState();
+}
+
+class _GroupInfoState extends State<GroupInfo> {
+  
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -42,7 +53,7 @@ class GroupInfo extends StatelessWidget {
                     Expanded(
                       child: Container(
                         child: Text(
-                          'Group Name',
+                          widget.groupName,
                           style: TextStyle(
                               fontSize: size.width / 16,
                               fontWeight: FontWeight.w500),

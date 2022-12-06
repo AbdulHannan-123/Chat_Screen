@@ -164,7 +164,7 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
         child: Icon(Icons.forward),
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => CreateGroup(),
+            builder: (_) => CreateGroup(membersList: membersList),
           ),
         ),
       ): null,
