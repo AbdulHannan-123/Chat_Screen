@@ -52,25 +52,25 @@ class _ChatsPageState extends State<ChatsPage> {
         // if (!snapshot.hasData) return  Text('Loading...');
         
                   print('==============================================');
-        return ListView.builder(
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  // DocumentSnapshot doc = snapshot.data.docs[index];
-                  print('++++++++++++++++++++++++++++++++++++++++++++++');
-                  print(snapshot.data[index]);
-                  return ListTile(
-                    // title: Text(doc.toString()),
-                  );
-                },
-              );
-      //   return  ListView(
-      //     children: snapshot.data!.docs.map<Widget>((DocumentSnapshot document) {
-      //       return  ListTile(
-      //         title:  Text(document['name']),
-      //         subtitle:  Text(document['phone']),
-      //       );
-      //    }).toList(),
-      //  );
+        // return ListView.builder(
+        //         itemCount: snapshot.data!.docs.length,
+        //         itemBuilder: (context, index) {
+        //           // DocumentSnapshot doc = snapshot.data.docs[index];
+        //           print('++++++++++++++++++++++++++++++++++++++++++++++');
+        //           print(snapshot.data[index]);
+              //     return ListTile(
+              //       title: Text(doc.toString()),
+              //     );
+              //   },
+              // );
+        return  ListView(
+          children: snapshot.data!.docs.map<Widget>((DocumentSnapshot document) {
+            return  ListTile(
+              title:  Text(document['name']),
+              subtitle:  Text(document['phone']),
+            );
+         }).toList(),
+       );
       },
       );
   }

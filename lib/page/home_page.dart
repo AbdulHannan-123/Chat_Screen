@@ -35,7 +35,7 @@ class HomePage extends StatelessWidget {
             Expanded(
               child: TabBarView(children: [
                 HomeScreen(),
-                ChatsPage(),
+                // ChatsPage(),
               ]),
             ),
           ],

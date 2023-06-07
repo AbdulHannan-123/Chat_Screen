@@ -107,7 +107,10 @@ class _ChatRoomState extends State<ChatRoom> {
               margin: const EdgeInsets.only(top: 8),
               padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                  color: Colors.red, borderRadius: BorderRadius.circular(34)),
+                   borderRadius: BorderRadius.circular(34),
+                   border: Border.all(color: Colors.blue, width: 3)
+                   ),
+                   
               child: Row(
                 children: [
                   Expanded(
@@ -184,7 +187,7 @@ class _ChatRoomState extends State<ChatRoom> {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
-              color:map['send_by'] != _auth.currentUser!.displayName? Colors.green : Colors.red,
+              color:map['send_by'] != _auth.currentUser!.displayName? Colors.indigoAccent : Colors.blue,
             ),
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
             margin: map['send_by'] != _auth.currentUser!.displayName

@@ -74,7 +74,9 @@ class GroupChatRoom extends StatelessWidget {
               margin: const EdgeInsets.only(top: 8),
               padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                  color: Colors.red, borderRadius: BorderRadius.circular(34)),
+                   borderRadius: BorderRadius.circular(34),
+                   border: Border.all(color: Colors.blue , width: 3)
+                   ),
               child: Row(
                 children: [
                   Expanded(

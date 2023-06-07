@@ -11,7 +11,7 @@ class Authentication extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (_auth.currentUser != null) {
-      return HomePage();
+      return HomeScreen();
     } else {
       return LoginScreen();
     }
